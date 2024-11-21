@@ -23,13 +23,22 @@ class MainView:
         self.point_listbox = tk.Listbox(control_frame, height=20, width=35)
         self.point_listbox.pack(pady=10)
 
-        self.solve_button = tk.Button(control_frame, text="Solve TSP")
-        self.solve_button.pack(pady=5)
+        button_frame = tk.Frame(control_frame)
+        button_frame.pack(pady=10)
+
+        self.prev_button = tk.Button(button_frame, text="←", width=5)
+        self.prev_button.pack(side=tk.LEFT, padx=(5, 10))
+
+        self.solve_button = tk.Button(button_frame, text="Solve TSP", width=10)
+        self.solve_button.pack(side=tk.LEFT, padx=(10, 10))
+
+        self.next_button = tk.Button(button_frame, text="→", width=5)
+        self.next_button.pack(side=tk.LEFT, padx=(10, 5))
 
         self.legend_canvas = tk.Canvas(control_frame, width=250, height=400)
         self.legend_canvas.pack(pady=5)
 
-    def draw_graph(self, points, routes, colors):
+    def draw_graph(self, points, routes, colors, current_index=0):
         self.ax.clear()
         self.ax.set_xlim((0, self.width))
         self.ax.set_ylim((0, self.height))
@@ -37,19 +46,20 @@ class MainView:
         for x, y in points:
             self.ax.scatter(x, y, c="blue", s=50)
 
-        for i, route in enumerate(routes):
-            offset = i * 30
+        if 0 <= current_index < len(routes):
+            route = routes[current_index]
+            color = colors[current_index]
 
             G = nx.Graph()
             for j, (x, y) in enumerate(route):
-                G.add_node(j, pos=(x + offset, y - offset))
+                G.add_node(j, pos=(x, y))
                 if j > 0:
                     G.add_edge(j - 1, j)
             G.add_edge(len(route) - 1, 0)
 
             pos = nx.get_node_attributes(G, 'pos')
-            nx.draw(G, pos, ax=self.ax, with_labels=True, node_color=colors[i],
-                    edge_color=colors[i], node_size=300, font_size=10)
+            nx.draw(G, pos, ax=self.ax, with_labels=True, node_color=color,
+                    edge_color=color, node_size=300, font_size=10)
 
         self.graph_canvas.draw()
 
