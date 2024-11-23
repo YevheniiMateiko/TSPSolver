@@ -1,12 +1,14 @@
 import tkinter as tk
-
 import networkx as nx
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 
 
 class MainView:
-    def __init__(self, root, width, height):
+    def __init__(self,
+                 root,
+                 width: int,
+                 height: int):
         self.root = root
         self.width = width
         self.height = height
@@ -50,15 +52,15 @@ class MainView:
             route = routes[current_index]
             color = colors[current_index]
 
-            G = nx.Graph()
+            graph = nx.Graph()
             for j, (x, y) in enumerate(route):
-                G.add_node(j, pos=(x, y))
+                graph.add_node(j, pos=(x, y))
                 if j > 0:
-                    G.add_edge(j - 1, j)
-            G.add_edge(len(route) - 1, 0)
+                    graph.add_edge(j - 1, j)
+            graph.add_edge(len(route) - 1, 0)
 
-            pos = nx.get_node_attributes(G, 'pos')
-            nx.draw(G, pos, ax=self.ax, with_labels=True, node_color=color,
+            pos = nx.get_node_attributes(graph, 'pos')
+            nx.draw(graph, pos, ax=self.ax, with_labels=True, node_color=color,
                     edge_color=color, node_size=300, font_size=10)
 
         self.graph_canvas.draw()

@@ -8,7 +8,12 @@ from TSPSolvers.NeuralSolvers import NeuralSolver
 
 
 class DynamicGAT(nn.Module, NeuralSolver):
-    def __init__(self, in_channels, hidden_channels, out_channels, heads=4, alpha = 0.5):
+    def __init__(self,
+                 in_channels: int,
+                 hidden_channels: int,
+                 out_channels: int,
+                 heads: int = 4,
+                 alpha: float = 0.5):
         super(DynamicGAT, self).__init__()
 
         self.in_channels = in_channels
@@ -26,7 +31,7 @@ class DynamicGAT(nn.Module, NeuralSolver):
     def __name__(self):
         return f"DynamicGAT({self.in_channels}x{self.hidden_channels}x{self.out_channels}, {self.alpha})"
 
-    def forward(self, x, edge_index):
+    def __forward(self, x, edge_index):
         x = self.initial_layer(x, edge_index)
         x = torch.relu(x)
 
@@ -38,7 +43,8 @@ class DynamicGAT(nn.Module, NeuralSolver):
         x = self.output_layer(x, edge_index)
         return x
 
-    def solve_tsp(self, points):
+    def solve_tsp(self,
+                  points: list[(float, float)]):
         x = torch.tensor(points, dtype=torch.float)
         n = len(points)
 
@@ -46,7 +52,7 @@ class DynamicGAT(nn.Module, NeuralSolver):
         edges = np.array(np.nonzero(dist_matrix)).T
         edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
 
-        embeddings = self.forward(x, edge_index)
+        embeddings = self.__forward(x, edge_index)
         scores = self.fc(embeddings).squeeze().detach().numpy()
 
         route = [0]

@@ -1,6 +1,6 @@
 from matplotlib import colormaps
 
-def generate_colors(num_colors):
+def generate_colors(num_colors: int):
     colormap = colormaps['tab10']
     return [colormap(i / num_colors) for i in range(num_colors)]
 

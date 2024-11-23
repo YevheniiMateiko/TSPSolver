@@ -3,7 +3,11 @@ from UI.colors import generate_colors, rgba_to_hex
 
 
 class MainController:
-    def __init__(self, root, solvers, width=600, height=400):
+    def __init__(self,
+                 root,
+                 solvers: tuple,
+                 width: int = 600,
+                 height: int = 400):
         self.view = MainView(root, width, height)
 
         self.solvers = solvers
@@ -34,7 +38,9 @@ class MainController:
         self.current_graph_index = 0
         self.update_graph()
 
-    def get_closest_point_index(self, x, y):
+    def get_closest_point_index(self,
+                                x: float,
+                                y: float):
         if x is None or y is None or not self.points:
             return None
         distances = [(i, (px - x) ** 2 + (py - y) ** 2) for i, (px, py) in enumerate(self.points)]

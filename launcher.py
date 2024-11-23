@@ -1,7 +1,5 @@
 import tkinter as tk
 
-from torch_geometric.nn import nearest
-
 from TSPSolvers.NeuralSolvers import DynamicGAT, SingleGAT
 from TSPSolvers.NonNeuralSolvers import BruteForceSolver, NearestNeighborSolver
 from UI.MainWindow import MainController

@@ -8,27 +8,31 @@ from TSPSolvers.NeuralSolvers import NeuralSolver
 
 
 class SingleGAT(nn.Module, NeuralSolver):
-    def __init__(self, in_channels, out_channels, heads=4, alpha = 0.5):
+    def __init__(self,
+                 in_channels: int,
+                 out_channels: int,
+                 heads: int = 4,
+                 alpha: float = 0.5):
         super(SingleGAT, self).__init__()
 
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.alpha = alpha
 
-        #Layers
         self.gat = GATConv(in_channels, out_channels, heads=heads, concat=False)
         self.fc = nn.Linear(out_channels, 1)
 
     def __name__(self):
         return f"SingleGAT({self.in_channels}x{self.out_channels}, {self.alpha})"
 
-    def forward(self, x, edge_index):
+    def __forward(self, x, edge_index):
         x = self.gat(x, edge_index)
         x = torch.relu(x)
 
         return x
 
-    def solve_tsp(self, points):
+    def solve_tsp(self,
+                  points: list[(float, float)]):
         x = torch.tensor(points, dtype=torch.float)
         n = len(points)
 
@@ -36,7 +40,7 @@ class SingleGAT(nn.Module, NeuralSolver):
         edges = np.array(np.nonzero(dist_matrix)).T
         edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
 
-        embeddings = self.forward(x, edge_index)
+        embeddings = self.__forward(x, edge_index)
         scores = self.fc(embeddings).squeeze().detach().numpy()
 
         route = [0]

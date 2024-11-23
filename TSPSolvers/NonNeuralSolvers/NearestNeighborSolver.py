@@ -10,7 +10,8 @@ class NearestNeighborSolver(NonNeuralSolver):
     def __name__(self):
         return "NearestNeighborSolver"
 
-    def solve_tsp(self, points):
+    def solve_tsp(self,
+                  points: list[(float, float)]):
         dist_matrix = cdist(points, points)
 
         n = len(points)

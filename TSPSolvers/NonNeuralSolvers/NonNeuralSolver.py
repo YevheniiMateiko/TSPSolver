@@ -18,5 +18,6 @@ class NonNeuralSolver(TSPSolver):
         pass
 
     @abstractmethod
-    def solve_tsp(self, points):
+    def solve_tsp(self,
+                  points: list[(float, float)]):
         pass
