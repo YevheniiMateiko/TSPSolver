@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch import optim
 from torch_geometric.nn import GATConv, GraphConv
 import numpy as np
 from scipy.spatial import distance_matrix
@@ -70,3 +71,33 @@ class DynamicGAT(nn.Module, NeuralSolver):
         total_distance += dist_matrix[route[-1], route[0]]
 
         return [points[i] for i in route], total_distance
+
+    def train_model(self, train_data, epochs=100, lr=0.001):
+        optimizer = optim.Adam(self.parameters(), lr=lr)
+        loss_fn = nn.MSELoss()
+
+        for epoch in range(epochs):
+            total_loss = 0
+            for points, target_distance in train_data:
+                self.train()
+
+                x = torch.tensor(points, dtype=torch.float)
+
+                dist_matrix = distance_matrix(points, points)
+                edges = np.array(np.nonzero(dist_matrix)).T
+                edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
+
+                optimizer.zero_grad()
+
+                embeddings = self.__forward(x, edge_index)
+                predicted_scores = self.fc(embeddings).squeeze()
+
+                _, predicted_distance = self.solve_tsp(points)
+                loss = loss_fn(predicted_scores.sum(),  # Використання безпосередньо обчисленого значення
+                               torch.tensor(target_distance, dtype=torch.float, requires_grad=False))
+
+                loss.backward()
+                optimizer.step()
+
+                total_loss += loss.item()
+            print(f"Epoch {epoch + 1}, Loss: {total_loss:.4f}")
